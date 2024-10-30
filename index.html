@@ -1,49 +1,67 @@
 <!DOCTYPE html>
 <html lang="en">
-
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>JS Drum Kit</title>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/tailwindcss/2.2.19/tailwind.min.css">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .playing {
+      transform: scale(1.1);
+      box-shadow: 0 0 10px #ff0000;
+    }
+    .dark-mode {
+      background-color: #1a1a1a;
+      color: #ffffff;
+    }
+    .light-mode {
+      background-color: #ffffff;
+      color: #000000;
+    }
+  </style>
 </head>
-
-<body>
-
-
-  <div class="keys">
-    <div data-key="65" class="key">
+<body class="light-mode">
+  <header class="bg-indigo-600 text-white p-4">
+    <div class="container mx-auto flex justify-between items-center">
+      <h1 class="text-2xl font-bold">JS Drum Kit</h1>
+      <button id="mode-toggle" class="bg-gray-800 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded">Dark Mode</button>
+    </div>
+  </header>
+  <div class="keys grid grid-cols-3 gap-4 p-4">
+    <div data-key="65" class="key bg-gray-800 text-white p-4 rounded-lg shadow-lg transition-transform duration-150 ease-in-out">
       <kbd>A</kbd>
       <span class="sound">clap</span>
     </div>
-    <div data-key="83" class="key">
+    <div data-key="83" class="key bg-gray-800 text-white p-4 rounded-lg shadow-lg transition-transform duration-150 ease-in-out">
       <kbd>S</kbd>
       <span class="sound">hihat</span>
     </div>
-    <div data-key="68" class="key">
+    <div data-key="68" class="key bg-gray-800 text-white p-4 rounded-lg shadow-lg transition-transform duration-150 ease-in-out">
       <kbd>D</kbd>
       <span class="sound">kick</span>
     </div>
-    <div data-key="70" class="key">
+    <div data-key="70" class="key bg-gray-800 text-white p-4 rounded-lg shadow-lg transition-transform duration-150 ease-in-out">
       <kbd>F</kbd>
       <span class="sound">openhat</span>
     </div>
-    <div data-key="71" class="key">
+    <div data-key="71" class="key bg-gray-800 text-white p-4 rounded-lg shadow-lg transition-transform duration-150 ease-in-out">
       <kbd>G</kbd>
       <span class="sound">boom</span>
     </div>
-    <div data-key="72" class="key">
+    <div data-key="72" class="key bg-gray-800 text-white p-4 rounded-lg shadow-lg transition-transform duration-150 ease-in-out">
       <kbd>H</kbd>
       <span class="sound">ride</span>
     </div>
-    <div data-key="74" class="key">
+    <div data-key="74" class="key bg-gray-800 text-white p-4 rounded-lg shadow-lg transition-transform duration-150 ease-in-out">
       <kbd>J</kbd>
       <span class="sound">snare</span>
     </div>
-    <div data-key="75" class="key">
+    <div data-key="75" class="key bg-gray-800 text-white p-4 rounded-lg shadow-lg transition-transform duration-150 ease-in-out">
       <kbd>K</kbd>
       <span class="sound">tom</span>
     </div>
-    <div data-key="76" class="key">
+    <div data-key="76" class="key bg-gray-800 text-white p-4 rounded-lg shadow-lg transition-transform duration-150 ease-in-out">
       <kbd>L</kbd>
       <span class="sound">tink</span>
     </div>
@@ -60,44 +78,31 @@
   <audio data-key="76" src="sounds/tink.wav"></audio>
 
   <script>
-  // method 1
-  /*function stopTransition(e){
-    if (e.propertyName !== 'transform') return;
-    e.target.classList.remove('playing');
-  }
-  function playAudio(e){
-    const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`); //注意：这里的querySelector里面是`号，不是单引号
-    const key = document.querySelector(`div[data-key="${e.keyCode}"]`);
-    if(!key) return;
-    if (!audio) return;
-    key.addEventListener('transitionend', stopTransition);
-    key.classList.add('playing');
-    audio.currentTime = 0;
-    audio.play();
-  }
-  window.addEventListener('keydown', playAudio);*/
+    function playAudio(e) {
+      const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
+      if (!audio) return;
+      const key = document.querySelector(`div[data-key="${e.keyCode}"]`);
+      if (!key) return;
+      audio.currentTime = 0; // rewind to the start
+      audio.play();
+      key.classList.add('playing');
+    }
 
-  // method 2
-  function playAudio(e){
-    const audio = document.querySelector(`audio[data-key="${e.keyCode}"]`);
-    if(!audio) return;
-    const key = document.querySelector(`div[data-key="${e.keyCode}"]`);
-    if(!key) return;
-    audio.currentTime = 0;//revind to the start
-    audio.play();
-    key.classList.add('playing');
-  }
-  function stopTransition(e){
-    if(e.propertyName !== 'transform') return;
-    console.log(this === e.target); //true
-    e.target.classList.remove('playing');
-  }
-  window.addEventListener('keydown',playAudio);
-  const keys = Array.from(document.querySelectorAll('.key'));
-  keys.forEach(key => key.addEventListener('transitionend',stopTransition));
-</script>
+    function stopTransition(e) {
+      if (e.propertyName !== 'transform') return;
+      e.target.classList.remove('playing');
+    }
 
+    window.addEventListener('keydown', playAudio);
+    const keys = Array.from(document.querySelectorAll('.key'));
+    keys.forEach(key => key.addEventListener('transitionend', stopTransition));
 
+    document.getElementById('mode-toggle').addEventListener('click', () => {
+      document.body.classList.toggle('dark-mode');
+      document.body.classList.toggle('light-mode');
+      const modeToggle = document.getElementById('mode-toggle');
+      modeToggle.textContent = document.body.classList.contains('dark-mode') ? 'Light Mode' : 'Dark Mode';
+    });
+  </script>
 </body>
-
 </html>
